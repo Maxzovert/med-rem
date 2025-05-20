@@ -230,25 +230,25 @@ const HomeScreen = () => {
 
       {/* model for notification Pannel */}
       <Modal visible={true} transparent={true} animationType="slide" >
-        <View>
-          <View>
-            <Text>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
               Notification
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity style={styles.closeButton}>
               <Ionicons name="close" size={24} color="#333" />
             </TouchableOpacity>
           </View>
           {
             [].map((medication)=> (
-              <View>
+              <View style={styles.notificationItem}>
                 <View>
                   <Ionicons name="medical" size={24} />
                 </View>
-                <View>
-                  <Text>medication name</Text>
-                  <Text>medication Dosage</Text>
-                  <Text>medication time</Text>
+                <View style={styles.notificationContent}>
+                  <Text style={styles.notificationTitle}>medication name</Text>
+                  <Text style={styles.notificationItem}>medication Dosage</Text>
+                  <Text style={styles.notificationTime}>medication time</Text>
                 </View>
               </View>
             ))
