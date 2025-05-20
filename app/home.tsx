@@ -5,6 +5,7 @@ import React, { useEffect, useRef } from "react";
 import {
   Animated,
   Dimensions,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -226,6 +227,34 @@ const HomeScreen = () => {
           )}
         </View>
       </View>
+
+      {/* model for notification Pannel */}
+      <Modal visible={true} transparent={true} animationType="slide" >
+        <View>
+          <View>
+            <Text>
+              Notification
+            </Text>
+            <TouchableOpacity>
+              <Ionicons name="close" size={24} color="#333" />
+            </TouchableOpacity>
+          </View>
+          {
+            [].map((medication)=> (
+              <View>
+                <View>
+                  <Ionicons name="medical" size={24} />
+                </View>
+                <View>
+                  <Text>medication name</Text>
+                  <Text>medication Dosage</Text>
+                  <Text>medication time</Text>
+                </View>
+              </View>
+            ))
+          }
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
