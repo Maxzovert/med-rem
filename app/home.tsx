@@ -111,22 +111,23 @@ function CircularProgress({
   );
 }
 const HomeScreen = () => {
-
   const router = useRouter();
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false} >
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <LinearGradient colors={["#1a5e2d", "#146922"]} style={styles.header}>
         <View style={styles.headerContent}>
           <View style={styles.headerTop}>
             <View style={styles.flex1}>
               <Text style={styles.greeting}>Daily Progress</Text>
-            </View >
+            </View>
             <TouchableOpacity style={styles.notificationButton}>
               <Ionicons name="notifications-outline" size={24} color="white" />
-              {<View style={styles.notificationBadge}>
-                <Text style={styles.notificationCount}>8</Text>
-                </View>}
+              {
+                <View style={styles.notificationBadge}>
+                  <Text style={styles.notificationCount}>8</Text>
+                </View>
+              }
             </TouchableOpacity>
           </View>
           <CircularProgress progress={50} totalDoses={10} completeDoese={5} />
@@ -157,21 +158,74 @@ const HomeScreen = () => {
             ))}
           </View>
         </View>
-        </View>
-
-      {/* Medication list */}
-      <View>
-        <View>
-          <Text>Today's Schedule</Text>
-          <Link rel="stylesheet" href='/calender'>
-          <TouchableOpacity>
-            <Text>See All</Text>
-          </TouchableOpacity>
-          </Link>
-        </View>
-        
       </View>
 
+      {/* Medication list */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Today's Schedule</Text>
+          <Link href="/calender" asChild>
+            <TouchableOpacity>
+              <Text style={styles.seeAllButton}>See All</Text>
+            </TouchableOpacity>
+          </Link>
+        </View>
+        <View>
+          {true ? (
+            <View style={styles.emptyState}>
+              <Ionicons name="medical-outline" size={48} color="#ccc" />
+              <Text style={styles.emptyStateText}>
+                No medications Scheduled for today
+              </Text>
+              <Link href="/medications/add" asChild>
+                <TouchableOpacity style={styles.addMedicationButton}>
+                  <Text style={styles.addMedicationButtonText}>
+                    Add Medication
+                  </Text>
+                </TouchableOpacity>
+              </Link>
+            </View>
+          ) : (
+            [].map((medications) => {
+              //const
+              return (
+                <View style={styles.doseCard}>
+                  <View style={[
+                    styles.doseBadge,
+                    // {
+                    //   backgroundColor : medications.color
+                    // }
+                    ]}>
+                    <Ionicons name="medical" size={24} />
+                  </View>
+                  <View style={styles.doseInfo}>
+                    <View >
+                      {/* <Text>{medications.name}</Text>
+                      <Text>{medications.time}</Text> */}
+                      <Text style={styles.medicineName}>name</Text>
+                      <Text style={styles.dosageInfo}>Dosage</Text>
+                    </View>
+                    <View style={styles.doseTime}>
+                      <Ionicons name="time-outline" size={24} color="#ccc" />
+                      <Text style={styles.timeText}>Time</Text>
+                    </View>
+                  </View>
+                  {true ? (
+                    <View style={styles.takeDoseButton}>
+                      <Ionicons name="checkmark-circle-outline" size={24} />
+                      <Text style={styles.takeDoseButton}>Taken</Text>
+                    </View>
+                  ) : (
+                    <TouchableOpacity>
+                      <Text style={styles.takeDoseText}>Take</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              );
+            })
+          )}
+        </View>
+      </View>
     </ScrollView>
   );
 };
