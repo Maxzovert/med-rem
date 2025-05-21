@@ -229,7 +229,7 @@ const HomeScreen = () => {
       </View>
 
       {/* model for notification Pannel */}
-      <Modal visible={true} transparent={true} animationType="slide" >
+      <Modal visible={false} transparent={true} animationType="slide" >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>
