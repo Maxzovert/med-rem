@@ -7,6 +7,7 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -100,27 +101,47 @@ const addMedicationScreen = () => {
     );
   };
   return (
-    <View>
+    <View style={styles.container}>
       <LinearGradient
         colors={["#1a8e2d", "#146922"]}
+        style={styles.headerGradient}
         start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        end={{ x: 1, y: 0 }}
       />
-      <View>
-        <View>
-          <TouchableOpacity>
-            <Ionicons name="chevron-back" size={28} color={"#1a8e2d"} />
+
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            // onPress={() => router.back()}
+            style={styles.backButton}
+          >
+            <Ionicons name="chevron-back" size={28} color="#1a8e2d" />
           </TouchableOpacity>
-          <Text>New Medication</Text>
+          <Text style={styles.headerTitle}>New Medication</Text>
         </View>
 
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View>
-            <View>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={{ flex: 1 }}
+          contentContainerStyle={styles.formContainer}
+        >
+          <View style={styles.section}>
+          <View style={styles.inputContainer}>
               <TextInput
+                style={[styles.mainInput && styles.inputError]}
                 placeholder="Medication Name"
-                placeholderTextColor={"#999"}
-              ></TextInput>
+                placeholderTextColor="#999"
+                value={form.name}
+                // onChangeText={(text) => {
+                //   setForm({ ...form, name: text });
+                //   if (errors.name) {
+                //     setErrors({ ...errors, name: "" });
+                //   }
+                // }}
+              />
+              {/* {errors.name && (
+                <Text style={styles.errorText}>{errors.name}</Text>
+              )} */}
             </View>
             <View>
               <TextInput
@@ -144,20 +165,72 @@ const addMedicationScreen = () => {
               </View>
               <Text>Starts: {}</Text>
             </TouchableOpacity>
-             <DateTimePicker mode="date" value={form.startDate} />
-             <DateTimePicker mode="time" value={(()=>{
-              const [hours , minutes] = form.times[0].split(":").map(Number);
-              const date = new Date();
-              date.setHours(hours,minutes,0,0)
-              return date
-             })()} />
+            <DateTimePicker mode="date" value={form.startDate} />
+            <DateTimePicker
+              mode="time"
+              value={(() => {
+                const [hours, minutes] = form.times[0].split(":").map(Number);
+                const date = new Date();
+                date.setHours(hours, minutes, 0, 0);
+                return date;
+              })()}
+            />
           </View>
 
-
           {/* REminders */}
+          <View style={styles.section}>
+            <View style={styles.card}>
+              <View style={styles.switchRow}>
+                <View style={styles.switchLabelContainer}>
+                  <View style={styles.iconContainer}>
+                    <Ionicons name="notifications" size={20} color="#1a8e2d" />
+                  </View>
+                  <View>
+                    <Text style={styles.switchLabel}>Reminders</Text>
+                    <Text style={styles.switchSubLabel}>
+                      Get notified when it's time to take your medication
+                    </Text>
+                  </View>
+                </View>
+                <Switch
+                  value={form.reminderEnabled}
+                  onValueChange={(value) =>
+                    setForm({ ...form, reminderEnabled: value })
+                  }
+                  trackColor={{ false: "#ddd", true: "#1a8e2d" }}
+                  thumbColor="white"
+                />
+              </View>
+            </View>
+          </View>
           {/* Refill tracking */}
           {/* notes */}
+          <View>
+            <View>
+              <TextInput
+                placeholder="Add notes or specatil instructions..."
+                placeholderTextColor="#999"
+              />
+            </View>
+          </View>
         </ScrollView>
+        <View>
+          <TouchableOpacity>
+            <LinearGradient
+              colors={["#1a8e2d", "#146922"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            >
+              <Text style={styles.saveButtonText}>
+                {/* {isSubmitting ? "Adding..." : "Add Medication"} */}
+                Add medication
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text>Cancel</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -186,7 +259,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingBottom: 20,
-    zIndex: 1,
+    // marginTop: 18
   },
   backButton: {
     width: 40,
