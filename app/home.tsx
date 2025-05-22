@@ -1,9 +1,12 @@
+import { registerForPushNotificationsAsync, scheduleMedicationReminder } from "@/utils/notification";
+import { DoseHistory, getMedications, getTodaysDoses, Medication } from "@/utils/storage";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link, useRouter } from "expo-router";
-import React, { useEffect, useRef } from "react";
+import { Link, useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
+  AppState,
   Dimensions,
   Modal,
   ScrollView,
@@ -113,6 +116,114 @@ function CircularProgress({
 }
 const HomeScreen = () => {
   const router = useRouter();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [medications, setMedications] = useState<Medication[]>([]);
+  const [todaysMedications, setTodaysMedications] = useState<Medication[]>([]);
+  const [completedDoses, setCompletedDoses] = useState(0);
+  const [doseHistory, setDoseHistory] = useState<DoseHistory[]>([]);
+
+  const loadMedcations = useCallback(async () => {
+    try {
+      const[allMedication , todaysDoeses] = await Promise.all([
+        getMedications(),
+        getTodaysDoses(),
+      ])
+      setDoseHistory(todaysDoeses);
+      setMedications(allMedication);
+
+      const today = new Date();
+
+      const todayMeds = allMedication.filter((med) => {
+        const startDate = new Date(med.startDate);
+        const durationDays = parseInt(med.duration.split(" ")[0])
+
+        if(
+          durationDays === -1 || (today >= startDate && today <= new Date(startDate.getTime() + durationDays * 24 * 60 * 60 * 1000))
+        ){
+          return true;
+        }
+        return false
+      });
+
+      setTodaysMedications(todayMeds)
+      
+      const completed = todaysDoeses.filter((dose) => dose.taken).length;
+      setCompletedDoses(completed);
+
+    } catch (error) {
+      console.error("Errro loading medications", error)
+    }
+  },[])
+
+  const setupNotifications = async () => {
+    try {
+      const token = await registerForPushNotificationsAsync();
+      if (!token) {
+        console.log("Failed to get push notification token");
+        return;
+      }
+
+      // Schedule reminders for all medications
+      const medications = await getMedications();
+      for (const medication of medications) {
+        if (medication.reminderEnabled) {
+          await scheduleMedicationReminder(medication);
+        }
+      }
+    } catch (error) {
+      console.error("Error setting up notifications:", error);
+    }
+  };
+
+  // Use useEffect for initial load
+  useEffect(() => {
+    loadMedcations();
+    setupNotifications();
+
+    // Handle app state changes for notifications
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (nextAppState === "active") {
+        loadMedcations();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const unsubscribe = () => {
+        // Cleanup if needed
+      };
+
+      loadMedcations();
+      return () => unsubscribe();
+    }, [loadMedcations])
+  );
+
+  const handleTakeDose = async (medication: Medication) => {
+    try {
+      await recordDose(medication.id, true, new Date().toISOString());
+      await loadMedcations(); // Reload data after recording dose
+    } catch (error) {
+      console.error("Error recording dose:", error);
+      Alert.alert("Error", "Failed to record dose. Please try again.");
+    }
+  };
+
+  const isDoseTaken = (medicationId: string) => {
+    return doseHistory.some(
+      (dose) => dose.medicationId === medicationId && dose.taken
+    );
+  };
+
+  const progress =
+    todaysMedications.length > 0
+      ? completedDoses / (todaysMedications.length * 2)
+      : 0;
+      
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
@@ -131,7 +242,7 @@ const HomeScreen = () => {
               }
             </TouchableOpacity>
           </View>
-          <CircularProgress progress={50} totalDoses={10} completeDoese={5} />
+          <CircularProgress progress={progress} totalDoses={todaysMedications.length * 2 } completeDoese={completedDoses} />
         </View>
       </LinearGradient>
 
@@ -562,3 +673,4 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
 });
+

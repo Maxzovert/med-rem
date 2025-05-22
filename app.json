@@ -3,6 +3,7 @@
     "name": "med-rem",
     "slug": "med-rem",
     "version": "1.0.0",
+    "projectId": "17246cb3-cde3-4e4e-b8e1-064ce72c8fa9",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "medrem",

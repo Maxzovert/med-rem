@@ -13,7 +13,7 @@ Notifications.setNotificationHandler({
 });
 
 export async function registerForPushNotificationsAsync(): Promise<
-  string | null
+  string | null 
 > {
   let token: string | null = null;
 

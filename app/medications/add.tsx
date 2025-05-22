@@ -436,7 +436,10 @@ export default function AddMedicationScreen() {
                   <View>
                     <Text style={styles.switchLabel}>Reminders</Text>
                     <Text style={styles.switchSubLabel}>
-                      Get notified when it's time to take your medication
+                      Get notified when it's time to take 
+                    </Text>
+                    <Text style={styles.switchSubLabel}>
+                    your medication
                     </Text>
                   </View>
                 </View>
@@ -776,12 +779,12 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   switchLabel: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: "600",
     color: "#333",
   },
   switchSubLabel: {
-    fontSize: 13,
+    fontSize: 10,
     color: "#666",
     marginTop: 2,
   },
