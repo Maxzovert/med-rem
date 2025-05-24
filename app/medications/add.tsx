@@ -19,7 +19,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 const { width } = Dimensions.get("window");
@@ -436,11 +436,9 @@ export default function AddMedicationScreen() {
                   <View>
                     <Text style={styles.switchLabel}>Reminders</Text>
                     <Text style={styles.switchSubLabel}>
-                      Get notified when it's time to take 
+                      Get notified when it's time to take
                     </Text>
-                    <Text style={styles.switchSubLabel}>
-                    your medication
-                    </Text>
+                    <Text style={styles.switchSubLabel}>your medication</Text>
                   </View>
                 </View>
                 <Switch
