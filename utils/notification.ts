@@ -13,7 +13,7 @@ Notifications.setNotificationHandler({
 });
 
 export async function registerForPushNotificationsAsync(): Promise<
-  string | null 
+  string | null
 > {
   let token: string | null = null;
 
@@ -75,7 +75,7 @@ export async function scheduleMedicationReminder(
         trigger: {
           hour: hours,
           minute: minutes,
-        //   repeats: true,
+          //   repeats: true,
           type: Notifications.SchedulableTriggerInputTypes.DAILY,
         },
       });

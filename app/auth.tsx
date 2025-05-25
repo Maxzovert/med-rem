@@ -1,14 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import * as LocalAuthentication from 'expo-local-authentication';
+import * as LocalAuthentication from "expo-local-authentication";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    Dimensions,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 const { width } = Dimensions.get("window");
 
@@ -18,40 +18,42 @@ const AuthScreen = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  useEffect(()=> {
+  useEffect(() => {
     checkBiometrics();
-  },[]);
+  }, []);
 
   const authenticate = async () => {
-    try{
-        setIsAuhteicating(true);
-        setError(null);
-        
-        const hasHardware = await LocalAuthentication.hasHardwareAsync();
-        const isEnrolled = await LocalAuthentication.isEnrolledAsync();
-        const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync;
-        //Handle Supported types
-        const auth = await LocalAuthentication.authenticateAsync({
-            promptMessage: hasHardware && isEnrolled ? 'Use Face Id/Touch Id' : 'PIN to acess your medications',
-            fallbackLabel: 'Use PIN',
-            cancelLabel: 'Cancel',
-            disableDeviceFallback: false
-        })
+    try {
+      setIsAuhteicating(true);
+      setError(null);
 
-        if(auth.success){
-            router.replace('/home')
-        }else{
-            setError("Authentication Failed Please Try Again")
-        }
-    } catch (error){
+      const hasHardware = await LocalAuthentication.hasHardwareAsync();
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+      const supportedTypes =
+        await LocalAuthentication.supportedAuthenticationTypesAsync;
+      //Handle Supported types
+      const auth = await LocalAuthentication.authenticateAsync({
+        promptMessage:
+          hasHardware && isEnrolled
+            ? "Use Face Id/Touch Id"
+            : "PIN to acess your medications",
+        fallbackLabel: "Use PIN",
+        cancelLabel: "Cancel",
+        disableDeviceFallback: false,
+      });
 
-    }
-  }
+      if (auth.success) {
+        router.replace("/home");
+      } else {
+        setError("Authentication Failed Please Try Again");
+      }
+    } catch (error) {}
+  };
   const checkBiometrics = async () => {
     const hasHardware = await LocalAuthentication.hasHardwareAsync();
     const isEnrolled = await LocalAuthentication.isEnrolledAsync();
-    setHasBiometrics(hasBiometrics && isEnrolled)
-  }
+    setHasBiometrics(hasBiometrics && isEnrolled);
+  };
   return (
     <LinearGradient colors={["#4CAF50", "#2E7D32"]} style={styles.continer}>
       <View style={styles.content}>

@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 
@@ -7,25 +7,25 @@ const SplachScreen = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.5)).current;
   const router = useRouter();
-  useEffect(()=> {
+  useEffect(() => {
     Animated.parallel([
-        Animated.timing(fadeAnim,{
-            toValue:1,
-            duration: 100,
-            useNativeDriver:true
-        }),
-        Animated.spring(scaleAnim,{
-            toValue:1,
-            tension: 10,
-            friction :2,
-            useNativeDriver: true
-        })
-    ]).start()
-    const timer = setTimeout(() =>{
-        router.replace('/auth' )
-    },2000)
-    return () => clearTimeout(timer)
-  },[])
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        tension: 10,
+        friction: 2,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    const timer = setTimeout(() => {
+      router.replace("/auth");
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
   return (
     <View style={style.container}>
       <Animated.View
@@ -37,7 +37,7 @@ const SplachScreen = () => {
           },
         ]}
       >
-        <Ionicons name='medical' size={100} color='white'/>
+        <Ionicons name="medical" size={100} color="white" />
         <Text style={style.appName}>Med-Rem</Text>
       </Animated.View>
     </View>
@@ -54,13 +54,13 @@ const style = StyleSheet.create({
     justifyContent: "center",
   },
   iconContainer: {
-    alignItems: 'center'
+    alignItems: "center",
   },
   appName: {
-    color: 'white',
-    fontSize:32,
-    fontWeight: 'bold',
+    color: "white",
+    fontSize: 32,
+    fontWeight: "bold",
     marginTop: 20,
-    letterSpacing:1,
-  }
+    letterSpacing: 1,
+  },
 });
