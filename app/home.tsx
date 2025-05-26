@@ -61,7 +61,7 @@ const QUICK_ACTIONS = [
   {
     icon: "medical-outline" as const,
     label: "Refill\nTracker",
-    route: "/medications/add" as const,
+    route: "/refills" as const,
     color: "#E64A19",
     gradient: ["#FF5722", "#E64A19"] as [string, string],
   },
