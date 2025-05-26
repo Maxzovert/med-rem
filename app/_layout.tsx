@@ -35,6 +35,14 @@ const RootLayout = () => {
             title: "",
           }}
         />
+        <Stack.Screen
+          name="refills"
+          options={{
+            headerShown: false,
+            headerBackTitle: "",
+            title: "",
+          }}
+        />
       </Stack>
     </GestureHandlerRootView>
   );
