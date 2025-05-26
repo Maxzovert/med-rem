@@ -15,12 +15,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
 import Svg, { Circle } from "react-native-svg";
 import {
   registerForPushNotificationsAsync,
   scheduleMedicationReminder,
 } from "../utils/notification";
 import {
+  clearAllData,
+  deleteMedication,
   DoseHistory,
   getMedications,
   getTodaysDoses,
@@ -44,21 +47,21 @@ const QUICK_ACTIONS = [
   {
     icon: "calendar-outline" as const,
     label: "Calendar\nView",
-    route: "/calendar" as const,
+    route: "/calender" as const,
     color: "#1976D2",
     gradient: ["#2196F3", "#1976D2"] as [string, string],
   },
   {
     icon: "time-outline" as const,
     label: "History\nLog",
-    route: "/history" as const,
+    route: "/medications/add" as const,
     color: "#C2185B",
     gradient: ["#E91E63", "#C2185B"] as [string, string],
   },
   {
     icon: "medical-outline" as const,
     label: "Refill\nTracker",
-    route: "/refills" as const,
+    route: "/medications/add" as const,
     color: "#E64A19",
     gradient: ["#FF5722", "#E64A19"] as [string, string],
   },
@@ -245,8 +248,72 @@ export default function HomeScreen() {
 
   const progress =
     todaysMedications.length > 0
-      ? completedDoses / (todaysMedications.length * 2)
+      ? completedDoses / todaysMedications.length
       : 0;
+
+  const handleDeleteMedication = async (medicationId: string) => {
+    Alert.alert(
+      "Delete Medication",
+      "Are you sure you want to delete this medication?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteMedication(medicationId);
+              await loadMedications();
+            } catch (error) {
+              console.error("Error deleting medication:", error);
+              Alert.alert("Error", "Failed to delete medication. Please try again.");
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleClearData = async () => {
+    Alert.alert(
+      "Clear All Data",
+      "Are you sure you want to clear all medication and dose history? This action cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Clear All",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await clearAllData();
+              await loadMedications();
+              Alert.alert("Success", "All data has been cleared successfully.");
+            } catch (error) {
+              console.error("Error clearing data:", error);
+              Alert.alert("Error", "Failed to clear data. Please try again.");
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const renderRightActions = (medicationId: string) => {
+    return (
+      <TouchableOpacity
+        style={styles.deleteAction}
+        onPress={() => handleDeleteMedication(medicationId)}
+      >
+        <Ionicons name="trash-outline" size={24} color="white" />
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -269,10 +336,16 @@ export default function HomeScreen() {
                 </View>
               )}
             </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.notificationButton, { marginLeft: 8 }]}
+              onPress={handleClearData}
+            >
+              <Ionicons name="trash-outline" size={24} color="white" />
+            </TouchableOpacity>
           </View>
           <CircularProgress
             progress={progress}
-            totalDoses={todaysMedications.length * 2}
+            totalDoses={todaysMedications.length}
             completedDoses={completedDoses}
           />
         </View>
@@ -305,7 +378,7 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Today's Schedule</Text>
-            <Link href="/calendar" asChild>
+            <Link href="/calender" asChild>
               <TouchableOpacity>
                 <Text style={styles.seeAllButton}>See All</Text>
               </TouchableOpacity>
@@ -329,50 +402,55 @@ export default function HomeScreen() {
             todaysMedications.map((medication) => {
               const taken = isDoseTaken(medication.id);
               return (
-                <View key={medication.id} style={styles.doseCard}>
-                  <View
-                    style={[
-                      styles.doseBadge,
-                      { backgroundColor: `${medication.color}15` },
-                    ]}
-                  >
-                    <Ionicons
-                      name="medical"
-                      size={24}
-                      color={medication.color}
-                    />
-                  </View>
-                  <View style={styles.doseInfo}>
-                    <View>
-                      <Text style={styles.medicineName}>{medication.name}</Text>
-                      <Text style={styles.dosageInfo}>{medication.dosage}</Text>
-                    </View>
-                    <View style={styles.doseTime}>
-                      <Ionicons name="time-outline" size={16} color="#666" />
-                      <Text style={styles.timeText}>{medication.times[0]}</Text>
-                    </View>
-                  </View>
-                  {taken ? (
-                    <View style={[styles.takenBadge]}>
-                      <Ionicons
-                        name="checkmark-circle"
-                        size={20}
-                        color="#4CAF50"
-                      />
-                      <Text style={styles.takenText}>Taken</Text>
-                    </View>
-                  ) : (
-                    <TouchableOpacity
+                <Swipeable
+                  key={medication.id}
+                  renderRightActions={() => renderRightActions(medication.id)}
+                >
+                  <View style={styles.doseCard}>
+                    <View
                       style={[
-                        styles.takeDoseButton,
-                        { backgroundColor: medication.color },
+                        styles.doseBadge,
+                        { backgroundColor: `${medication.color}15` },
                       ]}
-                      onPress={() => handleTakeDose(medication)}
                     >
-                      <Text style={styles.takeDoseText}>Take</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
+                      <Ionicons
+                        name="medical"
+                        size={24}
+                        color={medication.color}
+                      />
+                    </View>
+                    <View style={styles.doseInfo}>
+                      <View>
+                        <Text style={styles.medicineName}>{medication.name}</Text>
+                        <Text style={styles.dosageInfo}>{medication.dosage}</Text>
+                      </View>
+                      <View style={styles.doseTime}>
+                        <Ionicons name="time-outline" size={16} color="#666" />
+                        <Text style={styles.timeText}>{medication.times[0]}</Text>
+                      </View>
+                    </View>
+                    {taken ? (
+                      <View style={[styles.takenBadge]}>
+                        <Ionicons
+                          name="checkmark-circle"
+                          size={20}
+                          color="#4CAF50"
+                        />
+                        <Text style={styles.takenText}>Taken</Text>
+                      </View>
+                    ) : (
+                      <TouchableOpacity
+                        style={[
+                          styles.takeDoseButton,
+                          { backgroundColor: medication.color },
+                        ]}
+                        onPress={() => handleTakeDose(medication)}
+                      >
+                        <Text style={styles.takeDoseText}>Take</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </Swipeable>
               );
             })
           )}
@@ -720,5 +798,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 14,
     marginLeft: 4,
+  },
+  deleteAction: {
+    backgroundColor: "#FF5252",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 80,
+    height: "100%",
   },
 });
