@@ -54,7 +54,7 @@ const QUICK_ACTIONS = [
   {
     icon: "time-outline" as const,
     label: "History\nLog",
-    route: "/medications/add" as const,
+    route: "/history" as any,
     color: "#C2185B",
     gradient: ["#E91E63", "#C2185B"] as [string, string],
   },

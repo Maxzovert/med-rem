@@ -27,6 +27,14 @@ const RootLayout = () => {
             title: "",
           }}
         />
+        <Stack.Screen
+          name="history"
+          options={{
+            headerShown: false,
+            headerBackTitle: "",
+            title: "",
+          }}
+        />
       </Stack>
     </GestureHandlerRootView>
   );
