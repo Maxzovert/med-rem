@@ -6,7 +6,7 @@
     "projectId": "17246cb3-cde3-4e4e-b8e1-064ce72c8fa9",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "medrem",
+    "scheme": "exp+med-rem",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -39,6 +39,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "05b6a92c-15da-4f57-b297-1dae423a0502"
+      }
     }
   }
 }
